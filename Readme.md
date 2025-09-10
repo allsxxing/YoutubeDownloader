@@ -65,6 +65,48 @@ To learn more about the war and how you can help, [click here](https://tyrrrz.me
 - Automatically inject media tags
 - Log in with a YouTube account to access private content
 
+## Development
+
+### Prerequisites
+
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
+
+### Building the project
+
+To restore dependencies:
+
+```bash
+dotnet restore
+```
+
+To build the project:
+
+```bash
+dotnet build
+```
+
+### Running tests
+
+To run the unit tests:
+
+```bash
+dotnet test
+```
+
+To run tests with detailed output:
+
+```bash
+dotnet test -v normal
+```
+
+To run tests and generate a coverage report:
+
+```bash
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+The test project (`YoutubeDownloader.Tests`) contains unit tests for the core functionality, including utility classes for URL parsing and file name sanitization.
+
 ## Screenshots
 
 ![list](.assets/list.png)
