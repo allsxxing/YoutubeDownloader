@@ -32,7 +32,7 @@ class Program
     public static Task<bool> ValidateSpecificPlaylist()
     {
         // The exact playlist URL from the problem statement
-        const string PLAYLIST_URL = "https://youtube.com/playlist?list=PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq&si=kAM4YY8JsZV6DpWp";
+        const string PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq";
         const string EXPECTED_PLAYLIST_ID = "PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq";
         
         Console.WriteLine("🧪 COMPREHENSIVE PLAYLIST VALIDATION TEST");
@@ -92,7 +92,7 @@ class Program
             var urlVariations = new[]
             {
                 PLAYLIST_URL,
-                "https://www.youtube.com/playlist?list=PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq",
+                "https://youtube.com/playlist?list=PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq&si=kAM4YY8JsZV6DpWp",
                 "https://youtube.com/playlist?list=PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq",
                 "PLVTRPfBTtSUkOryPU3E25lgbfEncWmLPq" // Just the ID
             };

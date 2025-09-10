@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -45,9 +46,10 @@ public class QueryResolver(IReadOnlyList<Cookie>? initialCookies = null)
             var errorMessage = ex.Message;
             if (ex.Message.Contains("not found") || ex.Message.Contains("unavailable"))
             {
-                errorMessage = $"Playlist '{playlistId}' was not found or is not accessible. It may be private, deleted, or the URL may be incorrect.";
+                errorMessage =
+                    $"Playlist '{playlistId}' was not found or is not accessible. It may be private, deleted, or the URL may be incorrect.";
             }
-            
+
             throw new InvalidOperationException(errorMessage, ex);
         }
     }

@@ -17,7 +17,9 @@ public static class PlaylistUtils
     /// <summary>
     /// Validates multiple playlist URLs and returns validation results
     /// </summary>
-    public static IEnumerable<PlaylistValidationResult> ValidatePlaylistUrls(IEnumerable<string> urls)
+    public static IEnumerable<PlaylistValidationResult> ValidatePlaylistUrls(
+        IEnumerable<string> urls
+    )
     {
         foreach (var url in urls)
         {
@@ -48,16 +50,17 @@ public static class PlaylistUtils
     /// Generates safe file names for playlist videos with numbering
     /// </summary>
     public static string GeneratePlaylistVideoFileName(
-        IVideo video, 
-        int index, 
-        int totalCount, 
+        IVideo video,
+        int index,
+        int totalCount,
         string extension = "mp4",
-        string? playlistTitle = null)
+        string? playlistTitle = null
+    )
     {
         var paddedIndex = index.ToString().PadLeft(totalCount.ToString().Length, '0');
         var safeVideoTitle = SanitizeFileName(video.Title);
-        var safePlaylistTitle = !string.IsNullOrEmpty(playlistTitle) 
-            ? SanitizeFileName(playlistTitle) 
+        var safePlaylistTitle = !string.IsNullOrEmpty(playlistTitle)
+            ? SanitizeFileName(playlistTitle)
             : "Playlist";
 
         return $"{safePlaylistTitle} - {paddedIndex}. {safeVideoTitle}.{extension}";
@@ -72,27 +75,34 @@ public static class PlaylistUtils
             return "Untitled";
 
         var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
-        
+        var sanitized = string.Join(
+            "_",
+            fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries)
+        );
+
         // Trim and limit length
         sanitized = sanitized.Trim().Substring(0, Math.Min(sanitized.Length, 200));
-        
+
         return string.IsNullOrWhiteSpace(sanitized) ? "Untitled" : sanitized;
     }
 
     /// <summary>
     /// Groups videos by duration for batch processing
     /// </summary>
-    public static IEnumerable<IGrouping<string, IVideo>> GroupVideosByDuration(IEnumerable<IVideo> videos)
+    public static IEnumerable<IGrouping<string, IVideo>> GroupVideosByDuration(
+        IEnumerable<IVideo> videos
+    )
     {
-        return videos.GroupBy(v => v.Duration switch
-        {
-            null => "Live/Unknown",
-            var d when d.Value.TotalMinutes < 5 => "Short (< 5 min)",
-            var d when d.Value.TotalMinutes < 15 => "Medium (5-15 min)",
-            var d when d.Value.TotalMinutes < 60 => "Long (15-60 min)",
-            _ => "Very Long (> 1 hour)"
-        });
+        return videos.GroupBy(v =>
+            v.Duration switch
+            {
+                null => "Live/Unknown",
+                var d when d.Value.TotalMinutes < 5 => "Short (< 5 min)",
+                var d when d.Value.TotalMinutes < 15 => "Medium (5-15 min)",
+                var d when d.Value.TotalMinutes < 60 => "Long (15-60 min)",
+                _ => "Very Long (> 1 hour)",
+            }
+        );
     }
 
     /// <summary>
@@ -106,34 +116,34 @@ public static class PlaylistUtils
             "720p" => 50,
             "480p" => 25,
             "360p" => 15,
-            _ => 50
+            _ => 50,
         };
 
         var totalSizeGB = (videoCount * averageSizeMB) / 1024.0;
-        
-        return totalSizeGB < 1 
-            ? $"{videoCount * averageSizeMB:F0} MB"
-            : $"{totalSizeGB:F1} GB";
+
+        return totalSizeGB < 1 ? $"{videoCount * averageSizeMB:F0} MB" : $"{totalSizeGB:F1} GB";
     }
 
     /// <summary>
     /// Filters videos based on duration criteria
     /// </summary>
     public static IEnumerable<IVideo> FilterVideosByDuration(
-        IEnumerable<IVideo> videos, 
-        TimeSpan? minDuration = null, 
-        TimeSpan? maxDuration = null)
+        IEnumerable<IVideo> videos,
+        TimeSpan? minDuration = null,
+        TimeSpan? maxDuration = null
+    )
     {
         return videos.Where(video =>
         {
-            if (video.Duration == null) return true; // Include live streams and unknown durations
-            
+            if (video.Duration == null)
+                return true; // Include live streams and unknown durations
+
             if (minDuration.HasValue && video.Duration < minDuration.Value)
                 return false;
-                
+
             if (maxDuration.HasValue && video.Duration > maxDuration.Value)
                 return false;
-                
+
             return true;
         });
     }
@@ -148,12 +158,12 @@ public static class PlaylistUtils
             .Sum(v => v.Duration!.Value.TotalMinutes);
 
         var durationGroups = GroupVideosByDuration(videos);
-        
+
         var summary = $"""
             Playlist: {playlistTitle}
             Total Videos: {videos.Count}
             Total Duration: {totalDuration / 60:F1} hours ({totalDuration:F0} minutes)
-            
+
             Duration Breakdown:
             """;
 

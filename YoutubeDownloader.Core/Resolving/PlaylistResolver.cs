@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using YoutubeDownloader.Core.Utils;
@@ -27,7 +28,7 @@ public class PlaylistResolver(IReadOnlyList<Cookie>? initialCookies = null)
     {
         if (string.IsNullOrWhiteSpace(url))
             return false;
-            
+
         return PlaylistId.TryParse(url) != null;
     }
 
@@ -38,7 +39,7 @@ public class PlaylistResolver(IReadOnlyList<Cookie>? initialCookies = null)
     {
         if (string.IsNullOrWhiteSpace(url))
             return null;
-            
+
         var playlistId = PlaylistId.TryParse(url);
         return playlistId?.Value;
     }
