@@ -238,6 +238,14 @@ public partial class DashboardViewModel : ViewModelBase
             // Multiple videos
             else if (queryResult.Videos.Count > 1)
             {
+                // Show a preview notification for playlists
+                if (queryResult.Kind == QueryResultKind.Playlist)
+                {
+                    _snackbarManager.Notify(
+                        $"Found playlist with {queryResult.Videos.Count} videos"
+                    );
+                }
+
                 var downloads = await _dialogManager.ShowDialogAsync(
                     _viewModelManager.CreateDownloadMultipleSetupViewModel(
                         queryResult.Title,
