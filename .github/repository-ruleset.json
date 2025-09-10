@@ -1,0 +1,80 @@
+{
+  "name": "Main Branch Protection",
+  "target": "branch",
+  "source_type": "Repository",
+  "source": "allsxxing/YoutubeDownloader",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "refs/heads/master"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": true
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "required_status_checks": [
+          {
+            "context": "format",
+            "integration_id": null
+          },
+          {
+            "context": "pack (win-arm64, true)",
+            "integration_id": null
+          },
+          {
+            "context": "pack (win-x64, true)",
+            "integration_id": null
+          },
+          {
+            "context": "pack (linux-x64, true)",
+            "integration_id": null
+          },
+          {
+            "context": "pack (osx-x64, true)",
+            "integration_id": null
+          }
+        ],
+        "strict_required_status_checks_policy": true
+      }
+    },
+    {
+      "type": "non_fast_forward",
+      "parameters": {}
+    },
+    {
+      "type": "creation",
+      "parameters": {}
+    },
+    {
+      "type": "update",
+      "parameters": {
+        "update_allows_fetch_and_merge": false
+      }
+    },
+    {
+      "type": "deletion",
+      "parameters": {}
+    }
+  ],
+  "bypass_actors": [
+    {
+      "actor_id": 1,
+      "actor_type": "RepositoryRole",
+      "bypass_mode": "always"
+    }
+  ]
+}

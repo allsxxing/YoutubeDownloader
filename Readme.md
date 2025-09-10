@@ -71,3 +71,7 @@ To learn more about the war and how you can help, [click here](https://tyrrrz.me
 ![single](.assets/single.png)
 ![multiple](.assets/multiple.png)
 
+## Repository Governance
+
+This repository includes GitHub rulesets for branch protection that can be imported via GitHub's "Rulesets" UI. See [`.github/README.md`](.github/README.md) for details on importing and using the repository governance rules.
+
