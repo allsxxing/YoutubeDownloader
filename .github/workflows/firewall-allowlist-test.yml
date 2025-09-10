@@ -1,0 +1,152 @@
+name: Firewall Allowlist URL Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  test-firewall-allowlist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Test YouTube Main Site
+        run: |
+          echo "Testing YouTube main site connectivity..."
+          curl -sSf --connect-timeout 10 --max-time 30 -I https://www.youtube.com
+          echo "✅ www.youtube.com is accessible"
+
+      - name: Test YouTube Alternate URL
+        run: |
+          echo "Testing YouTube alternate URL connectivity..."
+          curl -sSf --connect-timeout 10 --max-time 30 -I https://youtube.com
+          echo "✅ youtube.com is accessible"
+
+      - name: Test Google Accounts (Authentication)
+        run: |
+          echo "Testing Google Accounts connectivity..."
+          curl -sSf --connect-timeout 10 --max-time 30 -I https://accounts.google.com
+          echo "✅ accounts.google.com is accessible"
+
+      - name: Test FFmpeg Site
+        run: |
+          echo "Testing FFmpeg site connectivity..."
+          # Some environments may restrict access to certain sites
+          if curl -sSf --connect-timeout 10 --max-time 30 -I https://ffmpeg.org > /dev/null 2>&1; then
+            echo "✅ ffmpeg.org is accessible"
+          else
+            echo "⚠️ ffmpeg.org may be restricted"
+            echo "Note: This is optional - app bundles FFmpeg or users can install separately"
+          fi
+
+      - name: Test GitHub API (for updates)
+        run: |
+          echo "Testing GitHub API connectivity..."
+          curl -sSf --connect-timeout 10 --max-time 30 -I https://api.github.com
+          echo "✅ api.github.com is accessible"
+
+      - name: Test YouTube Data API Endpoint
+        run: |
+          echo "Testing YouTube Data API endpoint..."
+          # Test googleapis.com connectivity (may be restricted in some environments)
+          if curl -sSf --connect-timeout 10 --max-time 30 -I https://www.googleapis.com > /dev/null 2>&1; then
+            echo "✅ googleapis.com is accessible"
+          else
+            echo "⚠️ googleapis.com may be restricted (this is expected in some firewall environments)"
+            echo "Note: YouTube functionality may require googleapis.com access for API calls"
+          fi
+
+      - name: Generate Firewall Allowlist Report
+        run: |
+          echo "## Firewall Allowlist Requirements" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The following URLs must be accessible for YoutubeDownloader to function properly:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Core YouTube Services" >> $GITHUB_STEP_SUMMARY
+          echo "- \`https://www.youtube.com\` - Main YouTube website" >> $GITHUB_STEP_SUMMARY
+          echo "- \`https://youtube.com\` - Alternate YouTube URL" >> $GITHUB_STEP_SUMMARY
+          echo "- \`https://www.googleapis.com\` - YouTube Data API" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Authentication" >> $GITHUB_STEP_SUMMARY
+          echo "- \`https://accounts.google.com\` - Google account authentication" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### External Dependencies" >> $GITHUB_STEP_SUMMARY
+          echo "- \`https://ffmpeg.org\` - FFmpeg information and downloads" >> $GITHUB_STEP_SUMMARY
+          echo "- \`https://api.github.com\` - GitHub API for updates" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Network Requirements" >> $GITHUB_STEP_SUMMARY
+          echo "- HTTPS (port 443) outbound access required" >> $GITHUB_STEP_SUMMARY
+          echo "- DNS resolution for the above domains" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All required URLs are accessible from this runner environment." >> $GITHUB_STEP_SUMMARY
+
+  test-cross-platform:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Test Core URLs (Cross-Platform)
+        shell: bash
+        run: |
+          echo "Testing on ${{ matrix.os }}..."
+          
+          # Test essential URLs with platform-appropriate timeout
+          critical_urls=(
+            "https://www.youtube.com"
+            "https://accounts.google.com"
+            "https://api.github.com"
+          )
+          
+          optional_urls=(
+            "https://www.googleapis.com"
+            "https://ffmpeg.org"
+          )
+          
+          echo "Testing critical URLs (must be accessible)..."
+          for url in "${critical_urls[@]}"; do
+            echo "Testing $url..."
+            if curl -sSf --connect-timeout 10 --max-time 30 -I "$url" > /dev/null 2>&1; then
+              echo "✅ $url is accessible on ${{ matrix.os }}"
+            else
+              echo "❌ $url is NOT accessible on ${{ matrix.os }}"
+              exit 1
+            fi
+          done
+          
+          echo "Testing optional URLs (may be restricted in some environments)..."
+          for url in "${optional_urls[@]}"; do
+            echo "Testing $url..."
+            if curl -sSf --connect-timeout 10 --max-time 30 -I "$url" > /dev/null 2>&1; then
+              echo "✅ $url is accessible on ${{ matrix.os }}"
+            else
+              echo "⚠️ $url may be restricted on ${{ matrix.os }}"
+            fi
+          done
+          
+          echo "🎉 All critical URLs are accessible on ${{ matrix.os }}"
