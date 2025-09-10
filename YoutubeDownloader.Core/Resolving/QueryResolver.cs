@@ -32,10 +32,24 @@ public class QueryResolver(IReadOnlyList<Cookie>? initialCookies = null)
         if (isPersonalSystemPlaylist && !_isAuthenticated)
             return null;
 
-        var playlist = await _youtube.Playlists.GetAsync(playlistId, cancellationToken);
-        var videos = await _youtube.Playlists.GetVideosAsync(playlistId, cancellationToken);
+        try
+        {
+            var playlist = await _youtube.Playlists.GetAsync(playlistId, cancellationToken);
+            var videos = await _youtube.Playlists.GetVideosAsync(playlistId, cancellationToken);
 
-        return new QueryResult(QueryResultKind.Playlist, $"Playlist: {playlist.Title}", videos);
+            return new QueryResult(QueryResultKind.Playlist, $"Playlist: {playlist.Title}", videos);
+        }
+        catch (Exception ex)
+        {
+            // Provide more specific error messages for common playlist issues
+            var errorMessage = ex.Message;
+            if (ex.Message.Contains("not found") || ex.Message.Contains("unavailable"))
+            {
+                errorMessage = $"Playlist '{playlistId}' was not found or is not accessible. It may be private, deleted, or the URL may be incorrect.";
+            }
+            
+            throw new InvalidOperationException(errorMessage, ex);
+        }
     }
 
     private async Task<QueryResult?> TryResolveVideoAsync(

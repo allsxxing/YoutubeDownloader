@@ -57,7 +57,7 @@ To learn more about the war and how you can help, [click here](https://tyrrrz.me
 
 - Cross-platform graphical user interface
 - Download videos by URL
-- Download videos from playlists or channels
+- **Download videos from playlists or channels** - Supports all YouTube playlist formats with batch selection
 - Download videos by search query
 - Selectable video quality and format
 - Automatically embed audio tracks in alternative languages
