@@ -29,6 +29,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly DisposableCollector _eventRoot = new();
     private readonly ResizableSemaphore _downloadSemaphore = new();
     private readonly AutoResetProgressMuxer _progressMuxer;
+    private readonly List<Task> _activeDownloadTasks = new();
 
     public DashboardViewModel(
         ViewModelManager viewModelManager,
@@ -89,7 +90,28 @@ public partial class DashboardViewModel : ViewModelBase
     private async Task ShowSettingsAsync() =>
         await _dialogManager.ShowDialogAsync(_viewModelManager.CreateSettingsViewModel());
 
-    private async void EnqueueDownload(DownloadViewModel download, int position = 0)
+    private void EnqueueDownload(DownloadViewModel download, int position = 0)
+    {
+        var downloadTask = EnqueueDownloadAsync(download, position);
+        lock (_activeDownloadTasks)
+        {
+            _activeDownloadTasks.Add(downloadTask);
+        }
+
+        // Clean up completed tasks in background
+        _ = downloadTask.ContinueWith(
+            task =>
+            {
+                lock (_activeDownloadTasks)
+                {
+                    _activeDownloadTasks.Remove(task);
+                }
+            },
+            TaskScheduler.Default
+        );
+    }
+
+    private async Task EnqueueDownloadAsync(DownloadViewModel download, int position = 0)
     {
         Downloads.Insert(position, download);
         var progress = _progressMuxer.CreateInput();
@@ -370,6 +392,26 @@ public partial class DashboardViewModel : ViewModelBase
         if (disposing)
         {
             CancelAllDownloads();
+
+            // Wait for all active download tasks to complete
+            Task[] activeTasks;
+            lock (_activeDownloadTasks)
+            {
+                activeTasks = _activeDownloadTasks.ToArray();
+            }
+
+            if (activeTasks.Length > 0)
+            {
+                try
+                {
+                    // Wait for all tasks to complete or timeout after 5 seconds
+                    Task.WaitAll(activeTasks, TimeSpan.FromSeconds(5));
+                }
+                catch (AggregateException)
+                {
+                    // Tasks were cancelled or failed, which is expected during shutdown
+                }
+            }
 
             _eventRoot.Dispose();
             _downloadSemaphore.Dispose();
