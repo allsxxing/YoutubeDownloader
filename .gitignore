@@ -13,3 +13,9 @@ obj/
 
 # Test results
 TestResults/
+
+# Clip extraction artifacts
+clips/*.mp4
+clips/*.mkv
+clips/*.webm
+logs/*.log
