@@ -23,7 +23,9 @@ public class ViewModelManager(IServiceProvider services)
     public DownloadViewModel CreateDownloadViewModel(
         IVideo video,
         VideoDownloadOption downloadOption,
-        string filePath
+        string filePath,
+        TimeSpan? sectionStartTime = null,
+        TimeSpan? sectionEndTime = null
     )
     {
         var viewModel = services.GetRequiredService<DownloadViewModel>();
@@ -31,6 +33,8 @@ public class ViewModelManager(IServiceProvider services)
         viewModel.Video = video;
         viewModel.DownloadOption = downloadOption;
         viewModel.FilePath = filePath;
+        viewModel.SectionStartTime = sectionStartTime;
+        viewModel.SectionEndTime = sectionEndTime;
 
         return viewModel;
     }
@@ -38,7 +42,9 @@ public class ViewModelManager(IServiceProvider services)
     public DownloadViewModel CreateDownloadViewModel(
         IVideo video,
         VideoDownloadPreference downloadPreference,
-        string filePath
+        string filePath,
+        TimeSpan? sectionStartTime = null,
+        TimeSpan? sectionEndTime = null
     )
     {
         var viewModel = services.GetRequiredService<DownloadViewModel>();
@@ -46,6 +52,8 @@ public class ViewModelManager(IServiceProvider services)
         viewModel.Video = video;
         viewModel.DownloadPreference = downloadPreference;
         viewModel.FilePath = filePath;
+        viewModel.SectionStartTime = sectionStartTime;
+        viewModel.SectionEndTime = sectionEndTime;
 
         return viewModel;
     }

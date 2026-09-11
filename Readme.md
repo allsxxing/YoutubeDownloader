@@ -60,6 +60,7 @@ To learn more about the war and how you can help, [click here](https://tyrrrz.me
 - **Download videos from playlists or channels** - Supports all YouTube playlist formats with batch selection
 - Download videos by search query
 - Selectable video quality and format
+- Download a specific section (time range) of a video
 - Automatically embed audio tracks in alternative languages
 - Automatically embed subtitles
 - Automatically inject media tags
