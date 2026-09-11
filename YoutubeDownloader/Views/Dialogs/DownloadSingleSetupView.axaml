@@ -11,7 +11,7 @@
     Width="500"
     x:DataType="dialogs:DownloadSingleSetupViewModel"
     Loaded="UserControl_OnLoaded">
-    <Grid RowDefinitions="Auto,*,Auto,Auto">
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
         <!--  Info  -->
         <StackPanel
             Grid.Row="0"
@@ -104,9 +104,44 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
+        <!--  Section (optional time range to download)  -->
+        <StackPanel Grid.Row="3" Margin="16,0,16,16" Orientation="Vertical">
+            <!--  Section start time  -->
+            <DockPanel
+                Margin="0,4"
+                LastChildFill="False"
+                ToolTip.Tip="Start of the section to download, e.g. 00:02:30. Leave empty to download from the beginning of the video.">
+                <TextBlock DockPanel.Dock="Left" Text="Section start time (optional)" />
+                <TextBox
+                    Width="150"
+                    Height="20"
+                    DockPanel.Dock="Right"
+                    FontSize="13"
+                    Text="{Binding SectionStartTime}"
+                    Theme="{DynamicResource CompactTextBox}"
+                    Watermark="00:00:00" />
+            </DockPanel>
+
+            <!--  Section end time  -->
+            <DockPanel
+                Margin="0,4"
+                LastChildFill="False"
+                ToolTip.Tip="End of the section to download, e.g. 00:13:30. Leave empty to download until the end of the video.">
+                <TextBlock DockPanel.Dock="Left" Text="Section end time (optional)" />
+                <TextBox
+                    Width="150"
+                    Height="20"
+                    DockPanel.Dock="Right"
+                    FontSize="13"
+                    Text="{Binding SectionEndTime}"
+                    Theme="{DynamicResource CompactTextBox}"
+                    Watermark="00:00:00" />
+            </DockPanel>
+        </StackPanel>
+
         <!--  Buttons  -->
         <StackPanel
-            Grid.Row="3"
+            Grid.Row="4"
             Margin="16,8,16,16"
             HorizontalAlignment="Right"
             Orientation="Horizontal">

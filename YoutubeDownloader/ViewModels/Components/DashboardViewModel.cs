@@ -117,6 +117,8 @@ public partial class DashboardViewModel : ViewModelBase
                 download.Video!,
                 downloadOption,
                 _settingsService.ShouldInjectSubtitles,
+                download.SectionStartTime,
+                download.SectionEndTime,
                 download.Progress.Merge(progress),
                 download.CancellationToken
             );
@@ -337,12 +339,16 @@ public partial class DashboardViewModel : ViewModelBase
             ? _viewModelManager.CreateDownloadViewModel(
                 download.Video!,
                 download.DownloadOption,
-                download.FilePath!
+                download.FilePath!,
+                download.SectionStartTime,
+                download.SectionEndTime
             )
             : _viewModelManager.CreateDownloadViewModel(
                 download.Video!,
                 download.DownloadPreference!,
-                download.FilePath!
+                download.FilePath!,
+                download.SectionStartTime,
+                download.SectionEndTime
             );
 
         EnqueueDownload(newDownload, position);

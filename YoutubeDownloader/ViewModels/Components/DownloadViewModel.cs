@@ -34,6 +34,12 @@ public partial class DownloadViewModel : ViewModelBase
     public partial VideoDownloadPreference? DownloadPreference { get; set; }
 
     [ObservableProperty]
+    public partial TimeSpan? SectionStartTime { get; set; }
+
+    [ObservableProperty]
+    public partial TimeSpan? SectionEndTime { get; set; }
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FileName))]
     public partial string? FilePath { get; set; }
 
